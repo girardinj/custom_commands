@@ -1,0 +1,50 @@
+#bin/bash
+
+help=$(cat << END
+-m [DIR_NAME]
+    create a directory [DIR_NAME] here and then cd into it
+
+--cmake [PATH] [GENERATOR]
+    initialize a cmake with specified [PATH] and [GENERATOR]
+    [PATH] is set to ../ if no value is provided
+    [GENERATOR] is set to MinGW Makefiles if no value is provided
+
+--cbuild [PATH]
+    build with cmake on specified path
+    [PATH] is set to . if no value is provided
+END
+)
+
+cc ()
+{
+    local suffix="${1:-}"
+
+    case $suffix in
+        -m)
+            local dir_name="${2:-}"
+            if [ "$dir_name" == "" ]
+            then
+                echo "please specify directory name to create here"
+            else
+                mkdir $dir_name && cd "$_"
+            fi
+            ;;
+        
+        --cmake)
+            local path="${2:-../}"
+            local generator="${3:-MinGW Makefiles}"
+            cmake $path -G "$generator"
+            ;;
+        
+        --cbuild)
+            local path="${2:-.}"
+            cmake --build $path
+            ;;
+
+        *)
+            echo "$help"
+            ;;
+    esac
+}
+
+export -f cc
